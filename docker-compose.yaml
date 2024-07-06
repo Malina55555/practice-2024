@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  database:
+    restart: always
+    image: postgres:14
+    container_name: "database"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 6633227pdthm
+      POSTGRES_DB: hh_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  serv:
+    restart: always
+    image: python:3.9
+    container_name: "serv"
+    depends_on:
+      - database
+    environment:
+      DATABASE_URL: postgresql://postgres:6633227pdthm@database:5432/hh_db
+    volumes:
+      - ./:/app
+    command: bash -c "pip install -r /app/requirements.txt && python /app/bot-api.py"
+
+volumes:
+  db_data:
